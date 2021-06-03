@@ -57,13 +57,6 @@ function human_readable_filesize(){
 action=$1
 subaction=$2
 
-if [[ $EUID -ne 0 ]]; then
-	warning_message "Super User privilages needed" 2>&1
-	exit 1 
-fi
-
-
-
 function print_all()
 {
 	success_message "########################### all container #####################"
@@ -80,10 +73,44 @@ function print_all()
 
 }
 
+function copy_to_volume()
+{
+	#echo $? $1 $2 $# $@
+	if [ -z "$1" ]; then
+		error_message "you should specify source"
+		exit 10
+	fi
+	if [ -z "$2" ]; then
+		error_message "you should specify volume name"
+		exit 10
+	fi
+	# copy data to a specific volume:
+	docker run -d --rm --name dummy -v ${2}:/root alpine tail -f /dev/null
+	docker cp ${1} dummy:/root
+	docker stop dummy
+}
+
+function delete_from_vol()
+{
+	#echo $? $1 $2 $# $@
+	if [ -z "$1" ]; then
+		error_message "you should specify volume"
+		exit 10
+	fi
+	if [ -z "$2" ]; then
+		error_message "you should specify file or directory to be delete"
+		exit 10
+	fi
+	# copy data to a specific volume:
+	docker run -d --rm --name dummy -v ${1}:/root alpine tail -f /dev/null
+	docker exec dummy rm -rf /root/${2}
+	docker stop dummy
+}
+
 function print_all_dangling_images()
 {	
 	clear
-		if [ $? -ne 0 ]; then
+	if [ $? -ne 0 ]; then
 		error_message "Failed."
 		exit 10
 	fi
@@ -110,6 +137,17 @@ case $action in
 	esac
 ;;
 
+"volume")
+	case $subaction in
+	"copy")
+		copy_to_volume "$3" "$4"
+	;;
+	"delete")
+		delete_from_vol "$3" "$4"
+	;;
+	esac
+;;
+
 "images")
 	case $subaction in
 	"dangling")
@@ -119,5 +157,7 @@ case $action in
 ;;
 
 esac
+
+
 
 exit 0
