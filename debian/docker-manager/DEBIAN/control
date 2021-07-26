@@ -1,0 +1,10 @@
+Package: docker-manager
+Version: 1.0.0-1
+Architecture: amd64
+Maintainer: Ehsan Ahmadi <e.rainyman2012@gmail.com>
+Installed-Size: 15
+Section: main
+Priority: optional
+Homepage: <insert the upstream URL, if relevant>
+Description: <insert up to 60 chars description>
+ <insert long description, indented with spaces>

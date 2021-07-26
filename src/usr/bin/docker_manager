@@ -128,6 +128,24 @@ function print_all_dangling_images()
 	fi
 }
 
+
+function print_help()
+{
+	info_message "
+docker_manager:
+print:
+	all:		print all docker component (containers, images ...)
+images:  	
+	dangling: 	find images which they aren't being used by a container.
+volume: 
+	copy: 	copy file/directory to a named volume
+	delete: delete file/directory from a named volume
+sample: 
+docker_manager.sh volume copy source named_volume
+docker_manager.sh volume delete named_volume destination
+"
+}
+
 case $action in
 "print")
 	case $subaction in
@@ -156,8 +174,16 @@ case $action in
 	esac
 ;;
 
+*)
+	print_help
+;;
 esac
 
 
+# connect to vm 
+# nc -U ~/Library/Containers/com.docker.docker/Data/debug-shell.sock
+
+# run non - service container like ubuntu
+# docker run -t -d ubuntu:focal
 
 exit 0
